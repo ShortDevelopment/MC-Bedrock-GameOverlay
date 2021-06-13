@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31321.278
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overlay", "Overlay\Overlay.csproj", "{C7DB49E1-B948-44B3-969C-1AD259C074F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MCWebSocket", "MCWebSocket\MCWebSocket.csproj", "{73FD78ED-6C52-47D5-8183-8F7D0ADF1977}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C7DB49E1-B948-44B3-969C-1AD259C074F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7DB49E1-B948-44B3-969C-1AD259C074F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7DB49E1-B948-44B3-969C-1AD259C074F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7DB49E1-B948-44B3-969C-1AD259C074F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73FD78ED-6C52-47D5-8183-8F7D0ADF1977}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73FD78ED-6C52-47D5-8183-8F7D0ADF1977}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73FD78ED-6C52-47D5-8183-8F7D0ADF1977}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73FD78ED-6C52-47D5-8183-8F7D0ADF1977}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ACFBA5F3-CCEB-41F1-A3E5-D7197029558A}
+	EndGlobalSection
+EndGlobal
