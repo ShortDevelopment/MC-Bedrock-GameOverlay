@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Net;
 
 namespace MCWebSocket
@@ -32,7 +34,7 @@ namespace MCWebSocket
         {
             Listener = new HttpListener();
             Listener.Prefixes.Add($"http://localhost:{Port}/");
-            Listener.Start();
+            Listener.Start();            
 
             Listener.BeginGetContext(async (IAsyncResult result) =>
             {

@@ -7,7 +7,7 @@ namespace Overlay
     {
         public static Color GetColorFromBlock(string id)
         {
-            Debug.Print(id);
+            //Debug.Print(id);
             switch (id)
             {
                 case "stone":

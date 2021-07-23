@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -43,13 +44,14 @@ namespace MCWebSocket
             while (ws.State == WebSocketState.Open)
             {
                 Package package = await ReceivePackage(ws);
-                if(package != null)
+                //Debug.Print(JsonConvert.SerializeObject(package));
+                if (package != null)
                 {
-                    if(package.Header.Purpose == "event")
+                    if (package.Header.Purpose == "event")
                     {
                         if (package.Payload["eventName"].ToString() != "PlayerTravelled")
                         {
-                            Debug.Print(JsonConvert.SerializeObject(package));
+
                         }
                         ReceivedEventMessage?.Invoke(this, package);
                     }
@@ -60,7 +62,7 @@ namespace MCWebSocket
                             promisQueue[package.Header.ID].SetResult(package);
                             promisQueue.Remove(package.Header.ID);
                         }
-                    }                    
+                    }
                 }
             }
         }
@@ -133,7 +135,7 @@ namespace MCWebSocket
         {
             SendPackage(pack);
             var promise = new TaskCompletionSource<Package>();
-            Debug.Print(pack.Header.ID);
+            //Debug.Print(pack.Header.ID);
             promisQueue.Add(pack.Header.ID, promise);
             return promise.Task;
         }
@@ -157,6 +159,39 @@ namespace MCWebSocket
 
         public InternalCommandsHelper InternalCommands { get; private set; }
         public PlayerHelper Players { get; private set; }
+
+        public async void CreateHelpFile()
+        {
+            int pageCount = (int)(await ExecuteCommand("help")).Payload["pageCount"];
+
+            string cmds = string.Join("\n", await Task.WhenAll(new string[pageCount].Select(async (x, pi) =>
+            {
+                var pack = await ExecuteCommand($"help {pi + 1}");
+                return pack.Payload["body"] + "\n";
+            })));
+
+            Func<string, string, string[]> Split = (string str, string seperator) => str.Split(new[] { seperator }, StringSplitOptions.None);
+
+            string content = string.Join("\n", await Task.WhenAll(Split(cmds, "\n").Select(async (full_cmd) =>
+            {
+                if (!string.IsNullOrEmpty(full_cmd))
+                {
+                    StringBuilder builder = new StringBuilder();
+                    string cmd = Split(full_cmd, " ")[0].Replace("/", "");
+                    var pack = await ExecuteCommand($"help {cmd}");
+                    builder.AppendLine($"## {cmd}");
+                    builder.AppendLine($"`{full_cmd}`");
+                    builder.AppendLine(pack.Payload["statusMessage"].ToString());
+                    return builder.ToString();
+                }
+                else
+                {
+                    return null;
+                }
+            })));
+
+            System.IO.File.WriteAllText("help.md", content);
+        }
 
         #endregion
 

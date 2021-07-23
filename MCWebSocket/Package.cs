@@ -40,5 +40,10 @@ namespace MCWebSocket
 #pragma warning restore CS0618 // Typ oder Element ist veraltet
         }
 
+        public string GetJSON(Formatting formatting = Formatting.Indented)
+        {
+            return JsonConvert.SerializeObject(this, formatting);
+        }
+
     }
 }
