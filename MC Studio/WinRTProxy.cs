@@ -21,32 +21,8 @@ namespace MC_Studio
         }
 
         public NamespaceProxy Windows = new NamespaceProxy("Windows");
-        //public WinRTProxies.WindowsNSProxy Windows = new WinRTProxies.WindowsNSProxy();
         public ObjectProxy Process = new ObjectProxy(System.Diagnostics.Process.GetCurrentProcess());
         public CoreWebView2 WebView;
-    }
-
-    namespace WinRTProxies
-    {
-        public class WindowsNSProxy
-        {
-            public UINSProxy UI = new UINSProxy();
-
-            public class UINSProxy
-            {
-                public PopupsNSProxy Popups = new PopupsNSProxy();
-
-                public class PopupsNSProxy
-                {
-                    public ObjectProxy MessageDialog(string content)
-                    {
-                        MessageDialog instance = new MessageDialog(content);
-                        ((IInitializeWithWindow)(object)instance).Initialize(FormsApplication.OpenForms[0].Handle);
-                        return new ObjectProxy(instance);
-                    }
-                }
-            }
-        }
     }
 
     public class WinRTAssemblyManager
