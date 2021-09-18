@@ -1,0 +1,300 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>MC Studio</title>
+
+    <script>
+
+        // #region Imports
+        const webView = window.chrome.webview;
+
+        // #endregion
+
+        // #region Framework
+
+
+        const bridge = webView.hostObjects.ui_bridge;
+
+        webView.addEventListener('message', (e) => {
+            const { data } = e;
+            const { type } = data;
+
+            if (type == "event") {
+                const { event_type, event_data } = data;
+                if (event_type == "new_client") {
+                    alert("Neuer Client!");
+                } else if (event_type == "get_current_mc_position") {
+                    const ele = AddEmptyPosContainer();
+                    console.log(event_data);
+                    ele.querySelector('*[data-title="Position"] *[placeholder="X"]').value = event_data["position"]["x"];
+                    ele.querySelector('*[data-title="Position"] *[placeholder="Y"]').value = event_data["position"]["y"];
+                    ele.querySelector('*[data-title="Position"] *[placeholder="Z"]').value = event_data["position"]["z"];
+                    ele.querySelector('*[data-title="Rotation"] *[placeholder="X"]').value = "0";
+                    ele.querySelector('*[data-title="Rotation"] *[placeholder="Y"]').value = event_data["yRot"];
+                }
+            }
+        });
+
+        /**
+         *
+         * @param {string} id
+         * @returns {HTMLElement}
+         */
+        function LoadTemplate(id) {
+            /** @type {HTMLTemplateElement} */
+            const template_ele = document.querySelector(`#${id}`);
+            return document.importNode(template_ele.content, true).children[0];
+        }
+
+        // #endregion
+
+        var app = {
+            /** @type {number[][]} */
+            points: []
+        };
+
+        function ExecuteAnimation() {
+            const origin_ele = document.querySelector(".timeline_ele_container > *:nth-child(2)");
+            const destination_ele = document.querySelector(".timeline_ele_container > *:nth-child(1)");
+
+            bridge.MoveTo(parseFloat(origin_ele.querySelector('*[data-title="Position"] *[placeholder="X"]').value), parseFloat(origin_ele.querySelector('*[data-title="Position"] *[placeholder="Y"]').value), parseFloat(origin_ele.querySelector('*[data-title="Position"] *[placeholder="Z"]').value),
+                parseFloat(origin_ele.querySelector('*[data-title="Rotation"] *[placeholder="X"]').value), parseFloat(origin_ele.querySelector('*[data-title="Rotation"] *[placeholder="Y"]').value),
+                parseFloat(destination_ele.querySelector('*[data-title="Position"] *[placeholder="X"]').value), parseFloat(destination_ele.querySelector('*[data-title="Position"] *[placeholder="Y"]').value), parseFloat(destination_ele.querySelector('*[data-title="Position"] *[placeholder="Z"]').value),
+                parseFloat(destination_ele.querySelector('*[data-title="Rotation"] *[placeholder="X"]').value), parseFloat(destination_ele.querySelector('*[data-title="Rotation"] *[placeholder="Y"]').value));
+
+            //bridge.MoveTo(489.00, 84.00, -748.00,
+            //    0, 0,
+            //    504.00, 128.00, -721,
+            //    90, 90);
+        }
+
+        // #region UI
+
+        function AddCurrentMCPosition() {
+            bridge.GetCurrentMCPosition();
+        }
+
+        /** @returns {HTMLElement} */
+        function AddEmptyPosContainer() {
+            const new_ele = LoadTemplate("property_template");
+            const container = document.querySelector(".timeline_ele_container");
+            container.insertBefore(new_ele, container.children[0]);
+            return new_ele;
+        }
+
+        // #endregion
+
+
+
+    </script>
+
+</head>
+<body>
+
+    <style>
+        body {
+            margin: 0px;
+            padding: 0px;
+            background: #202124;
+            color: #ffff;
+            font-family: 'Segoe UI', sans-serif;
+            box-sizing: border-box !important;
+        }
+
+        content {
+            height: 100vh;
+            display: grid;
+            grid-template-areas: 'header header' 'main properties' 'timeline timeline';
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto 1fr 0.5fr;
+        }
+
+            content > .c_header {
+                grid-area: header;
+            }
+
+            content > .c_main {
+                grid-area: main;
+            }
+
+            content > .c_properties {
+                grid-area: properties;
+                overflow-y: auto;
+            }
+
+            content > .c_timeline {
+                grid-area: timeline;
+            }
+
+        .container {
+            padding: 10px;
+        }
+
+        *[data-orientation="vertical"] {
+            display: flex;
+            flex-direction: column;
+        }
+
+            *[data-orientation="vertical"][data-gravity="center_horizontal"] {
+                display: flex;
+                align-items: center;
+            }
+
+        *[data-orientation="horizontal"] {
+            display: flex;
+            flex-direction: row;
+        }
+
+            *[data-orientation="horizontal"][data-gravity="center_horizontal"] {
+                display: flex;
+                justify-content: center;
+            }
+
+        code {
+            font-family: 'Cascadia Mono', Consolas, sans-serif;
+            font-size: 12pt;
+            color: #F2F2F2;
+            display: inline-block;
+            border-radius: 5px;
+            border: 1px solid lightgray;
+            padding: 5px 10px;
+        }
+    </style>
+
+    <style>
+        .mc_button {
+            background-color: #34aa2f;
+            box-shadow: 0 -4px rgba(21,108,0,.5) inset,0 4px rgba(100,253,31,.99) inset,-4px 0 rgba(100,253,31,.5) inset,4px 0 rgba(21,108,0,.5) inset;
+            padding: 1.2rem 3.5rem !important;
+            font-family: Helvetica Neue,Helvetica,Arial,sans-serif;
+            font-size: 1rem !important;
+            color: white;
+            text-shadow: 0 2px 0 rgba(0,0,0,.25);
+            text-transform: uppercase;
+            user-select: none;
+            cursor: pointer;
+            transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
+            border: none;
+            outline: none;
+        }
+
+            .mc_button:hover {
+                background-color: #313131;
+                box-shadow: 0 -4px rgba(0,0,0,.5) inset,0 4px rgba(255,255,255,.2) inset,-4px 0 rgba(255,255,255,.2) inset,4px 0 rgba(0,0,0,.5) inset;
+            }
+
+            .mc_button:focus {
+                outline: 2px solid #4dd2ff;
+            }
+
+        glyph {
+            display: inline-block;
+            font-family: "Segoe MDL2 Assets" !important;
+            margin-right: 5px;
+        }
+    </style>
+
+    <content>
+
+        <div class="c_header">
+
+            <style>
+                .menuStrip {
+                    min-height: 31px;
+                    display: flex;
+                    flex-direction: row;
+                    user-select: none;
+                }
+
+                    .menuStrip > .menuStripItem {
+                        display: block;
+                        padding: 7px 14px;
+                        color: #80868b;
+                        cursor: pointer !important;
+                        font-size: 12px;
+                        font-weight: 400;
+                        box-sizing: border-box;
+                    }
+
+                        .menuStrip > .menuStripItem:hover {
+                            background-color: rgb(61,62,66);
+                            color: white;
+                        }
+            </style>
+
+            <div class="menuStrip">
+                <a class="menuStripItem">Datei</a>
+                <a class="menuStripItem">Server</a>
+            </div>
+        </div>
+
+        <div class="c_main">
+
+            <style>
+                .c_main {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+            </style>
+
+            <div>
+                <code>/connect localhost:3000</code>
+                <button class="mc_button" onclick="ExecuteAnimation();"><glyph>&#xE768;</glyph>Animate</button>
+            </div>
+        </div>
+
+        <div class="c_properties container" data-orientation="vertical" data-gravity="center_horizontal">
+
+            <style>
+                .keyFrameData > input {
+                    display: block;
+                    padding: 5px 10px;
+                    margin: 5px;
+                    outline: none;
+                    box-shadow: none;
+                    border-radius: 3px;
+                    border: 1px solid lightgray;
+                }
+
+                    .keyFrameData > input:focus {
+                        border: 1px solid #EEDF6E;
+                    }
+
+                .keyFrameData::before {
+                    content: attr(data-title);
+                    display: block;
+                }
+            </style>
+
+            <button class="mc_button" onclick="AddCurrentMCPosition();"><glyph>&#xE710;</glyph>Hinzufügen</button>
+
+            <div class="timeline_ele_container"></div>
+
+        </div>
+
+        <div class="c_timeline container">
+            <input type="range" />
+        </div>
+
+    </content>
+
+    <template id="property_template">
+        <div class="container" data-orientation="horizontal">
+            <div class="keyFrameData" data-title="Position">
+                <input type="text" placeholder="X" />
+                <input type="text" placeholder="Y" />
+                <input type="text" placeholder="Z" />
+            </div>
+
+            <div class="keyFrameData" data-title="Rotation">
+                <input type="text" placeholder="X" />
+                <input type="text" placeholder="Y" />
+            </div>
+        </div>
+    </template>
+
+</body>
+</html>
