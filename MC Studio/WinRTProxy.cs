@@ -51,32 +51,6 @@ namespace MC_Studio
 
     public class WinRTAssemblyManager
     {
-        public static string WinMetdadataDir { get => "C:/Windows/System32/WinMetadata/"; }
-
-        private static HashSet<Assembly> _Assemblies;
-        public static Assembly[] Assemblies
-        {
-            get
-            {
-                if (_Assemblies == null)
-                {
-                    _Assemblies = new HashSet<Assembly>();
-                    foreach (string windmPath in Directory.GetFiles(WinMetdadataDir, "*.winmd"))
-                    {
-                        try
-                        {
-                            _Assemblies.Add(Assembly.Load(File.ReadAllBytes(windmPath)));
-                        }
-                        catch { }
-                    }
-                }
-                //var x = typeof(MessageDialog).Assembly; // Force load "Windows.UI.winmd"
-                //Debugger.Break();
-                //return AppDomain.CurrentDomain.GetAssemblies();
-                return _Assemblies.ToArray();
-            }
-        }
-
         private static Dictionary<string, List<Type>> _Namespaces;
         public static string[] Namespaces
         {
@@ -85,17 +59,14 @@ namespace MC_Studio
                 if (_Namespaces == null)
                 {
                     _Namespaces = new Dictionary<string, List<Type>>();
-                    foreach (Assembly assm in Assemblies)
+                    foreach (Type type in typeof(MessageDialog).Assembly.ExportedTypes)
                     {
-                        foreach (Type type in assm.ExportedTypes)
-                        {
-                            List<Type> types = new List<Type>();
-                            if (_Namespaces.ContainsKey(type.Namespace))
-                                types = _Namespaces[type.Namespace];
-                            else
-                                _Namespaces.Add(type.Namespace, types);
-                            types.Add(type);
-                        }
+                        List<Type> types = new List<Type>();
+                        if (_Namespaces.ContainsKey(type.Namespace))
+                            types = _Namespaces[type.Namespace];
+                        else
+                            _Namespaces.Add(type.Namespace, types);
+                        types.Add(type);
                     }
                 }
                 return _Namespaces.Keys.ToArray();
